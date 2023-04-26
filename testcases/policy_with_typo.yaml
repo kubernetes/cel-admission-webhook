@@ -1,0 +1,14 @@
+apiVersion: admissionregistration.x-k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: k8s-policy
+spec:
+  matchConstraints:
+    resourceRules:
+    - resourceNames: [ ]
+      operations: [ "CREATE", "UPDATE" ]
+      apiGroups: [ "*" ]
+      apiVersions: [ "*" ]
+      resources: [ "*" ]
+  validations:
+  - expression: object.metadata.name.endsWith('k8s')

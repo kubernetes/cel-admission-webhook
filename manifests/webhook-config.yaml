@@ -1,0 +1,61 @@
+# Copyright 2023 The Kubernetes Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: "cel-shim.example.com"
+webhooks:
+  - name: "cel-shim.example.com"
+    rules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        operations: ["*"]
+        resources: ["*"]
+        scope: "*"
+    clientConfig:
+      service:
+        namespace: default
+        name: cel-shim-webhook
+        path: /validate
+        port: 443
+      caBundle: | # REPLACE ME
+        LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUNHekNDQWFHZ0F3SUJBZ0lRUWRLZDBYTHE3
+        cWVBd1N4czZTK0hVakFLQmdncWhrak9QUVFEQXpCUE1Rc3cKQ1FZRFZRUUdFd0pWVXpFcE1DY0dB
+        MVVFQ2hNZ1NXNTBaWEp1WlhRZ1UyVmpkWEpwZEhrZ1VtVnpaV0Z5WTJnZwpSM0p2ZFhBeEZUQVRC
+        Z05WQkFNVERFbFRVa2NnVW05dmRDQllNakFlRncweU1EQTVNRFF3TURBd01EQmFGdzAwCk1EQTVN
+        VGN4TmpBd01EQmFNRTh4Q3pBSkJnTlZCQVlUQWxWVE1Ta3dKd1lEVlFRS0V5QkpiblJsY201bGRD
+        QlQKWldOMWNtbDBlU0JTWlhObFlYSmphQ0JIY205MWNERVZNQk1HQTFVRUF4TU1TVk5TUnlCU2Iy
+        OTBJRmd5TUhZdwpFQVlIS29aSXpqMENBUVlGSzRFRUFDSURZZ0FFelp2Vm40Q0RDdXdKU3ZNV1Nq
+        NWN6M2VzM21jRkRSMEh0dHdXCisxcUxGTnZpY1dERXVrV1ZFWW1PNmdiZjl5b1dIS1M1eGNVeTRB
+        UGdIb0lZT0l2WFJkZ0thbTdtQUhmN0FsRjkKSXRnS2JwcGJkOS93K2tIc09keDF5bWdIREIvcW8w
+        SXdRREFPQmdOVkhROEJBZjhFQkFNQ0FRWXdEd1lEVlIwVApBUUgvQkFVd0F3RUIvekFkQmdOVkhR
+        NEVGZ1FVZkVLV3J0NUxTRHY2a3ZpZWpNOXRpNmx5TjVVd0NnWUlLb1pJCnpqMEVBd01EYUFBd1pR
+        SXdlM2xPUmxDRXdrU0hSaHRGY1A5WW1kNzAvYVRTVmFZZ0xYVFdOTHhCbzFCZkFTZFcKdEw0bmRR
+        YXZFaTUxbUkzOEFqRUFpL1YzYk5USVphcmdDeXp1Rkowbk42VDVVNlZSNUNtRDEvaVFNVnRDbndy
+        MQovcTRBYU9lTVNRKzJiMXRiRmZMbgotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+    admissionReviewVersions: ["v1"]
+    sideEffects: None
+    timeoutSeconds: 2
+    namespaceSelector:
+      matchExpressions:
+      - key: kubernetes.io/metadata.name
+        operator: NotIn
+        values: ["kube-system","kube-node-lease","kube-public"]
+    objectSelector:
+      matchExpressions:
+      - key: app
+        operator: NotIn
+        values: ["cel-shim-webhook"]
