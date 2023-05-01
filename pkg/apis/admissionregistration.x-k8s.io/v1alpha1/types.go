@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 // COPIED FROMK8S SOURCE
-// Modified to include kuberbuilder status tags, cluster scoping, api-approved  annotation, required fields, defaults.
+// Modified to include kuberbuilder status tags, cluster scoping, required fields, defaults.
 
 package v1alpha1
 
@@ -72,7 +72,6 @@ const (
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:scope=Cluster
-// +kubebuilder:metadata:annotations="api-approved.kubernetes.io=unapproved, request not yet submitted"
 type ValidatingAdmissionPolicy struct {
 	metav1.TypeMeta `json:",inline"`
 	// Standard object metadata; More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata.
@@ -348,7 +347,6 @@ type AuditAnnotation struct {
 // +k8s:prerelease-lifecycle-gen:introduced=1.26
 // +kubebuilder:object:root=true
 // +kubebuilder:resource:scope=Cluster
-// +kubebuilder:metadata:annotations="api-approved.kubernetes.io=unapproved, request not yet submitted"
 type ValidatingAdmissionPolicyBinding struct {
 	metav1.TypeMeta `json:",inline"`
 	// Standard object metadata; More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata.
