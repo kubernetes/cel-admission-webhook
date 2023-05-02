@@ -4,10 +4,6 @@ metadata:
   name: k8s-policy
 spec:
   matchConstraints:
-    namespaceSelector:
-      matchLabels: { }
-    objectSelector:
-      matchLabels: { }
     resourceRules:
     - resourceNames: [ ]
       operations: [ "*" ]
