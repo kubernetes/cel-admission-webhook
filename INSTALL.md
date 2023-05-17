@@ -39,7 +39,7 @@ be active on your kind cluster and ready to enforce policies.
 > 🚧 WORK IN PROGRESS 🚧
 
 Requirements:
-  1. Kubernetes 1.x+ (TODO: determine minimum k8s version for webhook)
+  1. Kubernetes 1.16+
   2. kubectl configured to cluster
 
 ## Install CRDs
