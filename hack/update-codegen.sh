@@ -80,10 +80,12 @@ go run k8s.io/code-generator/cmd/deepcopy-gen \
 
 # Generate CRD manifests for all types using controller-gen
 echo "Generating crd manifests for ${GROUPS_WITH_VERSIONS}"
+if [ -d "./artifacts" ]; then rm -R ./artifacts; fi
+mkdir -p ./artifacts/crds
 go run sigs.k8s.io/controller-tools/cmd/controller-gen \
   crd \
   paths=./pkg/apis/... \
-  output:dir=./crds
+  output:dir=./artifacts/crds
 
 # Generated CRDs cannot have the empty object defaults, overwriting afterwards
 go run github.com/mikefarah/yq/v4 eval ".spec.versions[0].schema.openAPIV3Schema.properties.spec.properties.matchConstraints.properties.namespaceSelector.default = {}" "./crds/admissionregistration.x-k8s.io_validatingadmissionpolicies.yaml" -i
