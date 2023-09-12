@@ -214,12 +214,12 @@ func (wh *webhook) handleWebhookValidate(w http.ResponseWriter, req *http.Reques
 
 	logger.Info(
 		"review request",
+		"user",
+		parsed.Request.UserInfo.String(),
 		"resource",
 		parsed.Request.Resource.String(),
-		"namespace",
-		parsed.Request.Namespace,
-		"name",
-		parsed.Request.Name,
+		"operation",
+		parsed.Request.Operation,
 		"uid",
 		parsed.Request.UID,
 	)
