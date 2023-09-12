@@ -57,7 +57,7 @@ func (alertmanager *AlertManager) createAlert(alertInfo *AlertInfo) *models.Post
 			},
 		},
 		StartsAt: strfmt.DateTime(time.Now().UTC()),
-		EndsAt:   strfmt.DateTime(time.Now().Add(time.Hour).UTC()),
+		//EndsAt:   strfmt.DateTime(time.Now().Add(time.Hour).UTC()),
 	}
 
 	return alert

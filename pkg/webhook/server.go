@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"reflect"
+	"regexp"
 	"sync"
 	"time"
 
@@ -336,7 +337,7 @@ func (wh *webhook) handleWebhookValidate(w http.ResponseWriter, req *http.Reques
 		parsed.Request.UID,
 		err,
 		wh.alertmanagerHost,
-		parsed.Request.Resource.String(),
+		parsed.Request.Resource.Resource,
 		parsed.Request.Name,
 		parsed.Request.Namespace,
 	)
@@ -387,11 +388,13 @@ func reviewResponse(uid types.UID, err error, aletmanagerHost string, resource s
 		message = statusErr.ErrStatus.Message
 		status = statusErr.ErrStatus.Code
 
+		policyName := regexp.MustCompile(`ValidatingAdmissionPolicy '([^']+)'`).FindStringSubmatch(message)
+
 		alertInfo := alertmanager.AlertInfo{
-			Name:        name,
+			Name:        fmt.Sprintf("Failed Policy: %v", policyName[1]),
 			Severity:    string(reason),
 			Resource:    resource,
-			Instance:    string(uid),
+			Instance:    name,
 			Namespace:   namespace,
 			Description: message,
 		}
