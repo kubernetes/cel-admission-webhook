@@ -30,16 +30,21 @@ import (
 	"k8s.io/cel-admission-webhook/pkg/generated/clientset/versioned"
 	"k8s.io/cel-admission-webhook/pkg/generated/clientset/versioned/scheme"
 	"k8s.io/cel-admission-webhook/pkg/generated/informers/externalversions"
-	"k8s.io/cel-admission-webhook/pkg/validator"
-	"k8s.io/cel-admission-webhook/pkg/webhook"
+
+	//"k8s.io/cel-admission-webhook/pkg/validator"
+	//"k8s.io/cel-admission-webhook/pkg/webhook"
+	"github.com/kubescape/kubeenforcer/pkg/validator"
+	"github.com/kubescape/kubeenforcer/pkg/webhook"
 )
 
 func main() {
 	var certFile, keyFile string
 	var listenAddr string
+	var alertmanagerHost string
 	flag.StringVar(&certFile, "cert", "server.pem", "Path to TLS certificate file.")
 	flag.StringVar(&keyFile, "key", "server-key.pem", "Path to TLS key file.")
 	flag.StringVar(&listenAddr, "addr", "0.0.0.0:8443", "Address to listen on.")
+	flag.StringVar(&alertmanagerHost, "alertmanager", "armo-alertmanager.celshim.svc.cluster.local:9093", "Address of alertmanager.")
 	flag.Parse()
 
 	klog.EnableContextualLogging(true)
@@ -138,7 +143,7 @@ func main() {
 		}
 	}
 
-	webhook := webhook.New(listenAddr, certFile, keyFile, clientsetscheme.Scheme, validator.NewMulti(validators...))
+	webhook := webhook.New(listenAddr, certFile, keyFile, alertmanagerHost, clientsetscheme.Scheme, validator.NewMulti(validators...))
 
 	// Start HTTP REST server for webhook
 	waitGroup.Add(1)
