@@ -25,13 +25,13 @@ import (
 	"k8s.io/klog/v2"
 	aggregatorclientsetscheme "k8s.io/kube-aggregator/pkg/client/clientset_generated/clientset/scheme"
 
+	"github.com/kubescape/kubeenforcer/pkg/validator"
+	"github.com/kubescape/kubeenforcer/pkg/webhook"
 	"k8s.io/cel-admission-webhook/pkg/controller/admissionregistration.x-k8s.io/v1alpha1"
 	"k8s.io/cel-admission-webhook/pkg/controller/schemaresolver"
 	"k8s.io/cel-admission-webhook/pkg/generated/clientset/versioned"
 	"k8s.io/cel-admission-webhook/pkg/generated/clientset/versioned/scheme"
 	"k8s.io/cel-admission-webhook/pkg/generated/informers/externalversions"
-	"k8s.io/cel-admission-webhook/pkg/validator"
-	"k8s.io/cel-admission-webhook/pkg/webhook"
 )
 
 func main() {
