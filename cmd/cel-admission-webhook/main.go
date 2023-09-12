@@ -31,8 +31,6 @@ import (
 	"k8s.io/cel-admission-webhook/pkg/generated/clientset/versioned/scheme"
 	"k8s.io/cel-admission-webhook/pkg/generated/informers/externalversions"
 
-	//"k8s.io/cel-admission-webhook/pkg/validator"
-	//"k8s.io/cel-admission-webhook/pkg/webhook"
 	"github.com/kubescape/kubeenforcer/pkg/validator"
 	"github.com/kubescape/kubeenforcer/pkg/webhook"
 )
