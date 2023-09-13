@@ -8,8 +8,15 @@ Using this set of rules, you can enforce policies on your Kubernetes cluster and
 ## Alerting
 Kubeenforcer can be configured to send alerts to multiple destinations. Currently, the following destinations are supported:
 - Alertmanager
-- Slack (WIP)
-
+    - Slack
+    - Email
+    - Pagerduty
+    - Opsgenie
+    - Victorops
+    - Webhook
+    - Wechat
+    - Discord
+    - Telegram
 
 ## Installation
 Using Helm:
