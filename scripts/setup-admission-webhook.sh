@@ -75,7 +75,7 @@ webhooks:
       - apiGroups: ["*"]
         apiVersions: ["*"]
         operations: ["*"]
-        resources: ["*"]
+        resources: ["*", "pods/*"]
         scope: "*"
     clientConfig:
       service:
