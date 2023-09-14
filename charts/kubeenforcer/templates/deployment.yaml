@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kubeenforcer.fullname" . }}
+  labels:
+    {{- include "kubeenforcer.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "kubeenforcer.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "kubeenforcer.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.admissionWebhook.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "kubeenforcer.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.admissionWebhook.image.repository }}:{{ .Values.admissionWebhook.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.admissionWebhook.image.pullPolicy }}
+          ports:
+            - name: https
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          args:
+            - -cert=/etc/tls/tls.crt
+            - -key=/etc/tls/tls.key
+            - -addr=:443
+          volumeMounts:
+            - mountPath: "/etc/tls"
+              name: tls
+              readOnly: true
+      volumes:
+        - name: tls
+          secret:
+            secretName: {{ include "kubeenforcer.fullname" . }}-tls
