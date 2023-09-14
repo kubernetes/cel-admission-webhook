@@ -3,7 +3,7 @@ set -ex
 kubectl apply --server-side=true -f https://raw.githubusercontent.com/kubernetes/cel-admission-webhook/main/artifacts/crds/admissionregistration.x-k8s.io_validatingadmissionpolicies.yaml
 kubectl apply --server-side=true -f https://raw.githubusercontent.com/kubernetes/cel-admission-webhook/main/artifacts/crds/admissionregistration.x-k8s.io_validatingadmissionpolicybindings.yaml
 kubectl create namespace celshim
-kubectl apply --server-side=true -f https://raw.githubusercontent.com/kubescape/kubeenforcer/dev/manifests/alertmanager.yaml
+kubectl apply --server-side=true -f https://raw.githubusercontent.com/kubescape/kubeenforcer/main/manifests/alertmanager.yaml
 go run k8s.io/cel-admission-webhook/cmd/gentls --host=cel-shim-webhook.celshim.svc
 kubectl create secret tls cel-shim-webhook --cert=server.pem --key=server-key.pem --namespace celshim
 kubectl create serviceaccount cel-webhook -n celshim
