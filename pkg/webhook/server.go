@@ -9,9 +9,11 @@ import (
 	"net/http"
 	"os"
 	"reflect"
+	"regexp"
 	"sync"
 	"time"
 
+	"github.com/kubescape/kubeenforcer/pkg/alertmanager"
 	admissionv1 "k8s.io/api/admission/v1"
 	authenticationv1 "k8s.io/api/authentication/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
@@ -40,7 +42,7 @@ type Interface interface {
 	Run(ctx context.Context) error
 }
 
-func New(addr string, certFile, keyFile string, scheme *runtime.Scheme, validator admission.ValidationInterface) Interface {
+func New(addr string, certFile, keyFile string, alertmanagerHost string, scheme *runtime.Scheme, validator admission.ValidationInterface) Interface {
 	codecs := serializer.NewCodecFactory(scheme)
 	return &webhook{
 		objectInferfaces: admission.NewObjectInterfacesFromScheme(scheme),
@@ -49,6 +51,7 @@ func New(addr string, certFile, keyFile string, scheme *runtime.Scheme, validato
 		addr:             addr,
 		certFile:         certFile,
 		keyFile:          keyFile,
+		alertmanagerHost: alertmanagerHost,
 	}
 }
 
@@ -59,6 +62,7 @@ type webhook struct {
 	objectInferfaces  admission.ObjectInterfaces
 	decoder           runtime.Decoder
 	addr              string
+	alertmanagerHost  string
 	certFile, keyFile string
 }
 
@@ -214,12 +218,12 @@ func (wh *webhook) handleWebhookValidate(w http.ResponseWriter, req *http.Reques
 
 	logger.Info(
 		"review request",
+		"user",
+		parsed.Request.UserInfo.String(),
 		"resource",
 		parsed.Request.Resource.String(),
-		"namespace",
-		parsed.Request.Namespace,
-		"name",
-		parsed.Request.Name,
+		"operation",
+		parsed.Request.Operation,
 		"uid",
 		parsed.Request.UID,
 	)
@@ -332,6 +336,10 @@ func (wh *webhook) handleWebhookValidate(w http.ResponseWriter, req *http.Reques
 	response := reviewResponse(
 		parsed.Request.UID,
 		err,
+		wh.alertmanagerHost,
+		parsed.Request.Resource.Resource,
+		parsed.Request.Name,
+		parsed.Request.Namespace,
 	)
 
 	out, err := json.Marshal(response)
@@ -361,7 +369,8 @@ func (wh *webhook) handleWebhookValidate(w http.ResponseWriter, req *http.Reques
 	)
 }
 
-func reviewResponse(uid types.UID, err error) *admissionv1.AdmissionReview {
+func reviewResponse(uid types.UID, err error, aletmanagerHost string, resource string, name string, namespace string) *admissionv1.AdmissionReview {
+	alerter := alertmanager.New(aletmanagerHost, "")
 	allowed := err == nil
 	var status int32 = http.StatusAccepted
 	if err != nil {
@@ -378,6 +387,18 @@ func reviewResponse(uid types.UID, err error) *admissionv1.AdmissionReview {
 		reason = statusErr.ErrStatus.Reason
 		message = statusErr.ErrStatus.Message
 		status = statusErr.ErrStatus.Code
+
+		policyName := regexp.MustCompile(`ValidatingAdmissionPolicy '([^']+)'`).FindStringSubmatch(message)
+
+		alertInfo := alertmanager.AlertInfo{
+			Name:        fmt.Sprintf("Failed Policy: %v", policyName[1]),
+			Severity:    string(reason),
+			Resource:    resource,
+			Instance:    name,
+			Namespace:   namespace,
+			Description: message,
+		}
+		alerter.Alert(&alertInfo)
 	}
 
 	return &admissionv1.AdmissionReview{
