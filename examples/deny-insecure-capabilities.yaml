@@ -73,6 +73,8 @@ metadata:
   name: cluster-policy-deny-insecure-capabilities-binding
 spec:
   policyName: cluster-policy-deny-insecure-capabilities
+  paramRef:
+    name: basic-policy-configuration
   validationActions:
   - Deny
   - Audit
