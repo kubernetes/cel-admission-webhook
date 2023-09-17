@@ -9,7 +9,7 @@ admissionWebhook:
   replicaCount: 1
   image:
     repository: quay.io/kubescape/kubeenforcer
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     tag: "latest"
 
   imagePullSecrets: []
@@ -34,7 +34,11 @@ podAnnotations: {}
 
 podSecurityContext: {}
 
-securityContext: {}
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: ["ALL"]
 
 service:
   type: ClusterIP

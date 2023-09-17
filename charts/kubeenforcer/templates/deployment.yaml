@@ -41,6 +41,24 @@ spec:
             - -cert=/etc/tls/tls.crt
             - -key=/etc/tls/tls.key
             - -addr=:443
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 443
+              scheme: HTTPS
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 443
+              scheme: HTTPS
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            periodSeconds: 10
+            failureThreshold: 3
           volumeMounts:
             - mountPath: "/etc/tls"
               name: tls
