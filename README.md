@@ -19,9 +19,13 @@ Kubeenforcer can be configured to send alerts to multiple destinations. Currentl
     - Telegram
 
 ## Installation
-Using Helm:
+
+### Using Helm:
+
 ```bash
-...
+git clone https://github.com/kubescape/kubeenforcer.git && cd kubeenforcer
+kubectl create namespace kubescape
+helm install kubeenforcer -n kubescape ./charts/kubeenforcer
 ```
 
 ## Configuration
