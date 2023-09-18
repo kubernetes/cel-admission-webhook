@@ -27,9 +27,3 @@ git clone https://github.com/kubescape/kubeenforcer.git && cd kubeenforcer
 kubectl create namespace kubescape
 helm install kubeenforcer -n kubescape ./charts/kubeenforcer
 ```
-
-## Configuration
-The following table lists the configurable parameters of the Kubeenforcer chart and their default values.
-
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
