@@ -370,23 +370,24 @@ func (wh *webhook) handleWebhookValidate(w http.ResponseWriter, req *http.Reques
 }
 
 func reviewResponse(uid types.UID, err error, aletmanagerHost string, resource string, name string, namespace string) *admissionv1.AdmissionReview {
+	// Currently hard coded and commented logic in order to just audit, but in order to get the content we need the policy to be deny.
 	alerter := alertmanager.New(aletmanagerHost, "")
-	allowed := err == nil
-	var status int32 = http.StatusAccepted
-	if err != nil {
-		status = http.StatusForbidden
-	}
+	// allowed := err == nil
+	//var status int32 = http.StatusAccepted
+	// if err != nil {
+	// 	status = http.StatusForbidden
+	// }
 	reason := metav1.StatusReasonUnknown
 	message := "valid"
-	if err != nil {
-		message = err.Error()
-	}
+	// if err != nil {
+	// 	message = err.Error()
+	// }
 
 	var statusErr *k8serrors.StatusError
 	if ok := errors.As(err, &statusErr); ok {
 		reason = statusErr.ErrStatus.Reason
 		message = statusErr.ErrStatus.Message
-		status = statusErr.ErrStatus.Code
+		//status = statusErr.ErrStatus.Code
 
 		policyName := regexp.MustCompile(`ValidatingAdmissionPolicy '([^']+)'`).FindStringSubmatch(message)
 
@@ -408,11 +409,14 @@ func reviewResponse(uid types.UID, err error, aletmanagerHost string, resource s
 		},
 		Response: &admissionv1.AdmissionResponse{
 			UID:     uid,
-			Allowed: allowed,
+			Allowed: true, // Currently hard coding it.
 			Result: &metav1.Status{
-				Code:    status,
-				Message: message,
-				Reason:  reason,
+				//Code:    status,
+				Code: http.StatusAccepted, // Currently hard coding it.
+				//Message: message,
+				Message: "valid", // Currently hard coding it.
+				//Reason:  reason,
+				Reason: metav1.StatusReasonUnknown, // Currently hard coding it.
 			},
 		},
 	}
