@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
+      image-name: ${{ steps.image-name.outputs.IMAGE_NAME }}
+      image-version: ${{ steps.image-version.outputs.IMAGE_VERSION }}
     steps:
       - name: Checkout repository
         id: checkout-repository
