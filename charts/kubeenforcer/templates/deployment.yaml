@@ -41,6 +41,9 @@ spec:
             - -cert=/etc/tls/tls.crt
             - -key=/etc/tls/tls.key
             - -addr=:443
+{{- if .Values.admissionWebhook.alertmanager.enabled }}
+            - -alertmanager={{ .Values.admissionWebhook.alertmanager.endpoint }}
+{{- end }}
           livenessProbe:
             httpGet:
               path: /health
