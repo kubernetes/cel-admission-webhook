@@ -24,7 +24,9 @@ jobs:
 
       - name: Set image version
         id: image-version
-        run: echo 'IMAGE_VERSION=$(git describe --tags --abbrev=0)' >> $GITHUB_OUTPUT
+        run: |
+          echo 'IMAGE_VERSION=$(git describe --tags --abbrev=0)' >> $GITHUB_OUTPUT
+          git describe --tags --abbrev=0
 
       - name: Set image name
         id: image-name
@@ -40,6 +42,11 @@ jobs:
           QUAY_PASSWORD: ${{ secrets.QUAYIO_REGISTRY_PASSWORD }}
           QUAY_USERNAME: ${{ secrets.QUAYIO_REGISTRY_USERNAME }}
         run: docker login -u="${QUAY_USERNAME}" -p="${QUAY_PASSWORD}" quay.io
+
+      - name: Set image name
+        run: |
+          echo "IMAGE_NAME: ${{ steps.image-name.outputs.IMAGE_NAME }}"
+          echo "IMAGE_VERSION: ${{ steps.image-version.outputs.IMAGE_VERSION }}"
 
       - name: Build and push Docker image
         run: docker buildx build . --file ./Dockerfile --tag ${{ steps.image-name.outputs.IMAGE_NAME }}:${{ steps.image-version.outputs.IMAGE_VERSION }} --tag ${{ steps.image-name.outputs.IMAGE_NAME }}:latest --build-arg image_version=${{ steps.image-version.outputs.IMAGE_VERSION }} --build-arg client=image-release --push --platform linux/amd64,linux/arm64
