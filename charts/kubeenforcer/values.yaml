@@ -15,6 +15,9 @@ admissionWebhook:
   imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""
+  alertmanager:
+    enabled: false
+    endpoint: ""
 
 rbac:
   create: true
